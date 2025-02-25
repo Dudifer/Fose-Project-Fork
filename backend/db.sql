@@ -98,7 +98,7 @@ CREATE TABLE PendingDonations (
 -- Food Requests Table
 CREATE TABLE FoodRequests (
     FoodRequestID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each request
-    calories INT NOT NULL CHECK (calories > 0)  -- Requested calorie amount
+    Calories INT NOT NULL CHECK (Calories > 0)  -- Requested calorie amount
 );
 
 -- Food Donations Table
@@ -141,13 +141,13 @@ CREATE TABLE MedicationDonations (
 -- Medical Attention Requests Table
 CREATE TABLE MedicalAttentionRequests (
     MedicalAttentionRequestID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each request
-    severity INT NOT NULL CHECK (severity BETWEEN 1 AND 100)  -- Severity scale (1-100)
+    Severity INT NOT NULL CHECK (Severity BETWEEN 1 AND 100)  -- Severity scale (1-100)
 );
 
 -- Medical Attention Donations Table
 CREATE TABLE MedicalAttentionDonations (
     MedicalAttentionDonationID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each donation
-    severity INT NOT NULL CHECK (severity BETWEEN 1 AND 100)  -- Severity scale (1-100)
+    Severity INT NOT NULL CHECK (Severity BETWEEN 1 AND 100)  -- Severity scale (1-100)
 );
 
 -- Financial Requests Table
