@@ -3,24 +3,50 @@ CREATE DATABASE IF NOT EXISTS AidDatabase;
 USE AidDatabase;
 
 -- Create a table for patients information
-CREATE TABLE AidCategories (
-    AidCategoryID INT AUTO_INCREMENT PRIMARY KEY,         -- Aid category ID
-    CategoryName VARCHAR(45) NOT NULL                   -- Name of the category
+CREATE TABLE IF NOT EXISTS AidCategories(
+    AidCategoryID INT PRIMARY KEY,         -- Aid category ID
+    CategoryName VARCHAR(45) NOT NULL,                   -- Name of the category
+    UNIQUE (CategoryName)
 );
 
+INSERT INTO AidCategories(AidCategoryID, CategoryName)
+VALUES (0, 'food'),
+    (1, 'clothing'),
+    (2, 'medication'),
+    (3, 'medical attention'),
+    (4, 'shelter'),
+    (5, 'financial'),
+    (6, 'volunteer'),
+    (7, 'consumables') 
+;
 -- Create a table for storing Insurance Information
 CREATE TABLE ClothingTypes (
     ClothingTypeID INT AUTO_INCREMENT PRIMARY KEY,       -- ID for each clothing type
     TypeName VARCHAR(45) NOT NULL                       -- Name of clothing type
 );
 
+INSERT INTO ClolthingTypes(ClothingTypeID, TypeName)
+VALUES (0, 'shirt'),
+    (1, 'jacket/coat'),
+    (2, 'face/head covering'),
+    (3, 'gloves'),
+    (4, 'socks'),
+    (5, 'underwear'),
+    (6, 'shoes')
+;    --(0, 'crown/hear covering') vs face/head covering
+    --(0, 'jacket') and (0, 'coat')
+
+
 CREATE TABLE Users (
     UserID INT AUTO_INCREMENT PRIMARY KEY,         -- Unique Patient ID
-    Name VARCHAR(255),                             -- Patient's full name
+    Name Binary(16),                             -- Patient's full name
     DateOfBirth DATE NOT NULL,                     -- Patient's date of birth. Binary?
     Address Binary(16),                            -- Patient's address
     ZipCode Binary(16),                            -- Patient's ZipCode, seperate for easy lookup.
-    Email Binary(16)                               -- Patient's email 
+    Email Binary(16),                               -- Patient's email 
+    Password Binary(16), 
+    SecurityQuestion1 Binary(16),
+    SecurityAnswer1 Binary(16)
 );
 
 -- Create a table for storing Copay/Deductible information
@@ -189,29 +215,46 @@ CREATE TABLE ShelterDonations (
 
 -- Patients Table Procedures
 DELIMITER //
--- CREATE PROCEDURE CreatePatient (IN fName VARCHAR(100), IN lName VARCHAR(100), IN dob DATE, IN addr VARCHAR(255), IN phone VARCHAR(20), IN email VARCHAR(100))
--- BEGIN
---     INSERT INTO Patients (FirstName, LastName, DateOfBirth, Address, PhoneNumber, Email)
---     VALUES (fName, lName, dob, addr, phone, email);
--- END //
+CREATE PROCEDURE CreateUser (IN name VARCHAR(100), IN dob DATE, IN addr Binary(16), IN zip Binary(16), IN email Binary(16), IN pwd Binary(16))
+BEGIN
+    INSERT INTO Users (Name, DateOfBirth, Address, ZipCode, Email, Password)
+    VALUES (name, dob, addr, zip, email, pwd);
+END //
 
--- CREATE PROCEDURE UpdatePatient (IN pID INT, IN fName VARCHAR(100), IN lName VARCHAR(100), IN addr VARCHAR(255), IN phone VARCHAR(20), IN email VARCHAR(100))
--- BEGIN
---     UPDATE Patients
---     SET FirstName = fName, LastName = lName, Address = addr, PhoneNumber = phone, Email = email
---     WHERE PatientID = pID;
--- END //
+CREATE PROCEDURE UpdateUser (IN uid INT, IN name VARCHAR(100), IN addr VARCHAR(255), IN zip VARCHAR(20), IN email VARCHAR(100), IN pwd Binary(16))
+BEGIN
+    UPDATE Users
+    SET Name = name, Address = addr, ZipCode = zip, Email = email
+    WHERE UserID = uid;
+END //
 
--- CREATE PROCEDURE DeletePatient (IN pID INT)
--- BEGIN
---     DELETE FROM Patients WHERE PatientID = pID;
--- END //
+CREATE PROCEDURE DeletePatient (IN uid INT)
+BEGIN
+    DELETE FROM Users WHERE UserID = uid;
+END //
 
--- CREATE PROCEDURE RetrievePatients ()
--- BEGIN
---     SELECT * FROM Patients;
--- END //
+CREATE PROCEDURE GetUsers ()
+BEGIN
+    SELECT * FROM Users;
+END //
 
+CREATE PROCEDURE GetUser (IN email Binary(16), IN pwd Binary (16))
+BEGIN 
+    SELECT * FROM Users
+    WHERE Email = email and Password = pwd;
+END //
+
+CREATE PROCEDURE AddDonation ()
+
+
+CREATE TABLE Donations (
+    DonationID INT AUTO_INCREMENT PRIMARY KEY,       
+    CategoryID INT NOT NULL CHECK ((CategoryID > -1) AND CategoryID ),                      
+    AidCategoryID INT NOT NULL,                       
+    FOREIGN KEY (AidCategoryID) REFERENCES AidCategories(AidCategoryID),
+    DonorID INT NOT NULL,                       
+    FOREIGN KEY (DonorID) REFERENCES ActiveDonors(DonorID)
+);
 -- InsuranceInformation Table Procedures
 -- CREATE PROCEDURE CreateInsurance (IN pID INT, IN provider VARCHAR(255), IN policy VARCHAR(255), IN copay DECIMAL(10, 2), IN deductible DECIMAL(10, 2), IN services TEXT)
 -- BEGIN
@@ -307,4 +350,4 @@ DELIMITER //
 -- BEGIN
 --     SELECT * FROM Payments;
 -- END //
--- DELIMITER ;
+DELIMITER ;
