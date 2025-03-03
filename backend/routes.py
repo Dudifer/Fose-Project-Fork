@@ -13,17 +13,18 @@ def index():
 def about():
     return render_template('about.html')
 
-@main_bp.route('/api/login', methods=['POST'])
+# @main_bp.route('/api/login', methods=['POST'])
+@main_bp.route('../../react-frontend/src/components/login.jsx', methods=['POST'])
 def login():
     data = request.json
-    username = data['username']
+    email = data['email']
     password = data['password']
 
     cursor = db.cursor(dictionary=True)
-    cursor.execute("SELECT * FROM users WHERE username = %s", (username,))
-    user = cursor.fetchone()
+    cursor.execute("SELECT * FROM users WHERE email = %s", (email,))
+    email = cursor.fetchone()
 
-    if user and bcrypt.checkpw(password.encode('utf-8'), user['password_hash'].encode('utf-8')):
+    if email and bcrypt.checkpw(password.encode('utf-8'), email['password_hash'].encode('utf-8')):
         return jsonify({"message": "Login successful"}), 200
     else:
         return jsonify({"error": "Invalid credentials"}), 401

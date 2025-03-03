@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import "./App.css";
 
 function login() {
-  const [username, setUsername] = useState("");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = (e) => {
@@ -16,11 +16,18 @@ function login() {
       <div className="login-box">
         <h2>Login</h2>
         <form onSubmit={handleLogin}>
-          <input
+          {/* <input
             type="text"
             placeholder="Username"
             value={username}
             onChange={(e) => setUsername(e.target.value)}
+            required
+          /> */}
+          <input
+            type="text"
+            placeholder="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             required
           />
           <input
