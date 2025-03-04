@@ -15,41 +15,51 @@ USE DAMS;
 -- Create a table for patients information
 CREATE TABLE IF NOT EXISTS AidCategories(
     AidCategoryID INT PRIMARY KEY,         -- Aid category ID
-    CategoryName VARCHAR(45) NOT NULL,                   -- Name of the category
-    UNIQUE (CategoryName)
+    CategoryName VARCHAR(45) UNIQUE NOT NULL                   -- Name of the category
 );
 
-INSERT INTO AidCategories(AidCategoryID, CategoryName)
-SELECT (0, 'food'),
-    (1, 'clothing'),
-    (2, 'medication'),
-    (3, 'medical attention'),
-    (4, 'shelter'),
-    (5, 'financial'),
-    (6, 'volunteer'),
-    (7, 'consumables') FROM DUAL 
-WHERE NOT EXISTS (SELECT * FROM AidCategories);
+-- INSERT INTO AidCategories (AidCategoryID, CategoryName)
+-- SELECT 0, 'food' FROM DUAL WHERE NOT EXISTS (SELECT * FROM AidCategories WHERE AidCategoryID = 0)
+-- UNION ALL
+-- SELECT 1, 'clothing' FROM DUAL WHERE NOT EXISTS (SELECT * FROM AidCategories WHERE AidCategoryID = 1)
+-- UNION ALL
+-- SELECT 2, 'medication' FROM DUAL WHERE NOT EXISTS (SELECT * FROM AidCategories WHERE AidCategoryID = 2)
+-- UNION ALL
+-- SELECT 3, 'medical attention' FROM DUAL WHERE NOT EXISTS (SELECT * FROM AidCategories WHERE AidCategoryID = 3)
+-- UNION ALL
+-- SELECT 4, 'shelter' FROM DUAL WHERE NOT EXISTS (SELECT * FROM AidCategories WHERE AidCategoryID = 4)
+-- UNION ALL
+-- SELECT 5, 'financial' FROM DUAL WHERE NOT EXISTS (SELECT * FROM AidCategories WHERE AidCategoryID = 5)
+-- UNION ALL
+-- SELECT 6, 'volunteer' FROM DUAL WHERE NOT EXISTS (SELECT * FROM AidCategories WHERE AidCategoryID = 6)
+-- UNION ALL
+-- SELECT 7, 'consumables' FROM DUAL WHERE NOT EXISTS (SELECT * FROM AidCategories WHERE AidCategoryID = 7);
 
 -- Create a table for storing Insurance Information
-CREATE TABLE ClothingTypes (
-    ClothingTypeID INT AUTO_INCREMENT PRIMARY KEY,       -- ID for each clothing type
+CREATE TABLE IF NOT EXISTS ClothingTypes (
+    ClothingTypeID INT PRIMARY KEY,       -- ID for each clothing type
     TypeName VARCHAR(45) NOT NULL                       -- Name of clothing type
 );
 
-INSERT INTO ClolthingTypes(ClothingTypeID, TypeName)
-SELECT (0, 'shirt'),
-    (1, 'jacket/coat'),
-    (2, 'face/head covering'),
-    (3, 'gloves'),
-    (4, 'socks'),
-    (5, 'underwear'),
-    (6, 'shoes') FROM DUAL
-WHERE NOT EXISTS (SELECT * FROM ClothingTypes);
+-- INSERT INTO ClothingTypes(ClothingTypeID, TypeName)
+-- SELECT 0, 'shirt' FROM DUAL WHERE NOT EXISTS (SELECT * FROM ClothingTypes WHERE ClothingTypeID = 0)
+-- UNION ALL
+-- SELECT 1, 'jacket/coat' FROM DUAL WHERE NOT EXISTS (SELECT * FROM ClothingTypes WHERE ClothingTypeID = 1)
+-- UNION ALL
+-- SELECT 2, 'face/head covering' FROM DUAL WHERE NOT EXISTS (SELECT * FROM ClothingTypes WHERE ClothingTypeID = 2)
+-- UNION ALL
+-- SELECT 3, 'gloves' FROM DUAL WHERE NOT EXISTS (SELECT * FROM ClothingTypes WHERE ClothingTypeID = 3)
+-- UNION ALL
+-- SELECT 4, 'socks' FROM DUAL WHERE NOT EXISTS (SELECT * FROM ClothingTypes WHERE ClothingTypeID = 4)
+-- UNION ALL
+-- SELECT 5, 'underwear' FROM DUAL WHERE NOT EXISTS (SELECT * FROM ClothingTypes WHERE ClothingTypeID = 5)
+-- UNION ALL
+-- SELECT 6, 'shoes' FROM DUAL WHERE NOT EXISTS (SELECT * FROM ClothingTypes WHERE ClothingTypeID = 6);
 
 -- (0, 'crown/hear covering') vs face/head covering
 -- (0, 'jacket') and (0, 'coat')
 
-CREATE TABLE Users (
+CREATE TABLE IF NOT EXISTS Users (
     UserID INT AUTO_INCREMENT PRIMARY KEY,         -- Unique Patient ID
     Name VARCHAR(50),                             -- Patient's full name
     DateOfBirth DATE NOT NULL,                     -- Patient's date of birth. Binary?
@@ -63,11 +73,11 @@ CREATE TABLE Users (
 
 -- Make default/admin account 
 INSERT INTO Users(Name, DateOfBirth, Address, ZipCode, Email, Password)
-SELECT ("Jacob Nyberg", '2002-01-03', "316 Tantara Court, North Liberty IA", 52317, "sheeshthebot@gmail.com", "luvgothmommys") FROM DUAL
-WHERE NOT EXISTS (SELECT * FROM Users);
+SELECT "Jacob Nyberg", '2002-01-03', "316 Tantara Court, North Liberty IA", 52317, "sheeshthebot@gmail.com", "luvgothmommys" FROM DUAL
+WHERE NOT EXISTS (SELECT 1 FROM Users WHERE UserID = 1);
 
 -- Create a table for storing Payments
-CREATE TABLE Administrators (
+CREATE TABLE IF NOT EXISTS Administrators (
     AdminID INT AUTO_INCREMENT PRIMARY KEY,       
     UserID INT NOT NULL,                       
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
@@ -78,36 +88,28 @@ SELECT (1) FROM DUAL
 WHERE NOT EXISTS (SELECT * FROM Administrators);
 
 -- Create a table for storing Copay/Deductible information
-CREATE TABLE ActiveDonors (
+CREATE TABLE IF NOT EXISTS ActiveDonors (
     DonorID INT AUTO_INCREMENT PRIMARY KEY,       
     UserID INT NOT NULL,                       
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
 -- Create a table for storing Bill information (Bill Remaining to Patient)
-CREATE TABLE ActiveRecipients (
+CREATE TABLE IF NOT EXISTS ActiveRecipients (
     RecipientID INT AUTO_INCREMENT PRIMARY KEY,       
     UserID INT NOT NULL,                       
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
 -- Create a table for storing Payments
-CREATE TABLE CallCenterOperators (
+CREATE TABLE IF NOT EXISTS CallCenterOperators (
     OperatorID INT AUTO_INCREMENT PRIMARY KEY,       
     UserID INT NOT NULL,                       
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
 -- Create a table for storing Payments
-CREATE TABLE Disasters (
-    DisasterID INT AUTO_INCREMENT PRIMARY KEY,       
-    Name VARCHAR(255),
-    AreaID INT NOT NULL,                              
-    FOREIGN KEY (AreaID) REFERENCES ImpactAreas(AreaID)
-);
-
--- Create a table for storing Payments
-CREATE TABLE ImpactAreas (
+CREATE TABLE IF NOT EXISTS ImpactAreas (
     AreaID INT AUTO_INCREMENT PRIMARY KEY,       
     ZipCodeStart INT NOT NULL,
     ZipCodeEnd INT NOT NULL,
@@ -115,7 +117,15 @@ CREATE TABLE ImpactAreas (
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
 
-CREATE TABLE Donations (
+-- Create a table for storing Payments
+CREATE TABLE IF NOT EXISTS Disasters (
+    DisasterID INT AUTO_INCREMENT PRIMARY KEY,       
+    Name VARCHAR(255),
+    AreaID INT NOT NULL,                              
+    FOREIGN KEY (AreaID) REFERENCES ImpactAreas(AreaID)
+);
+
+CREATE TABLE IF NOT EXISTS Donations (
     DonationID INT AUTO_INCREMENT PRIMARY KEY,       
     CategoryID INT NOT NULL,                      
     AidCategoryID INT NOT NULL,                       
@@ -124,7 +134,7 @@ CREATE TABLE Donations (
     FOREIGN KEY (DonorID) REFERENCES ActiveDonors(DonorID)
 );
 
-CREATE TABLE AidRequests (
+CREATE TABLE IF NOT EXISTS AidRequests (
     AidRequestID INT AUTO_INCREMENT PRIMARY KEY,   
     CategoryID INT NOT NULL,                      
     AidCategoryID INT NOT NULL,                       
@@ -133,7 +143,7 @@ CREATE TABLE AidRequests (
     FOREIGN KEY (RecipientID) REFERENCES ActiveRecipients(RecipientID)
 );
 
-CREATE TABLE PendingDonations (
+CREATE TABLE IF NOT EXISTS PendingDonations (
     PendingDonationID INT AUTO_INCREMENT PRIMARY KEY,       
     Quantity INT NOT NULL,                      
     AidRequestID INT NOT NULL,                      
@@ -143,20 +153,20 @@ CREATE TABLE PendingDonations (
 );
 
 -- Food Requests Table
-CREATE TABLE FoodRequests (
+CREATE TABLE IF NOT EXISTS FoodRequests (
     FoodRequestID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each request
     Calories INT NOT NULL CHECK (Calories > 0)  -- Requested calorie amount
 );
 
 -- Food Donations Table
-CREATE TABLE FoodDonations (
+CREATE TABLE IF NOT EXISTS FoodDonations (
     FoodDonationID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each donation
     CaloriesPerUnit INT NOT NULL CHECK (CaloriesPerUnit > 0),  -- Calories per unit donated
     Units INT NOT NULL CHECK (Units > 0)  -- Number of units donated
 );
 
 -- Clothing Requests Table
-CREATE TABLE ClothingRequests (
+CREATE TABLE IF NOT EXISTS ClothingRequests (
     ClothingRequestID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each request
     ClothingTypeID INT NOT NULL,  -- Foreign key to ClothingTypes
     Quantity INT NOT NULL CHECK (Quantity > 0),  -- Number of clothing items requested
@@ -164,7 +174,7 @@ CREATE TABLE ClothingRequests (
 );
 
 -- Clothing Donations Table
-CREATE TABLE ClothingDonations (
+CREATE TABLE IF NOT EXISTS ClothingDonations (
     ClothingDonationID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each donation
     ClothingTypeID INT NOT NULL,  -- Foreign key to ClothingTypes
     Quantity INT NOT NULL CHECK (Quantity > 0),  -- Number of clothing items donated
@@ -172,98 +182,104 @@ CREATE TABLE ClothingDonations (
 );
 
 -- Medication Requests Table
-CREATE TABLE MedicationRequests (
+CREATE TABLE IF NOT EXISTS MedicationRequests (
     MedicationRequestID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each request
     name VARCHAR(100) NOT NULL,  -- Name of the medication requested
     Quantity INT NOT NULL CHECK (Quantity > 0)  -- Quantity of medication requested
 );
 
 -- Medication Donations Table
-CREATE TABLE MedicationDonations (
+CREATE TABLE IF NOT EXISTS MedicationDonations (
     MedicationDonationID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each donation
     name VARCHAR(100) NOT NULL,  -- Name of the medication donated
     Quantity INT NOT NULL CHECK (Quantity > 0)  -- Quantity of medication donated
 );
 
 -- Medical Attention Requests Table
-CREATE TABLE MedicalAttentionRequests (
+CREATE TABLE IF NOT EXISTS MedicalAttentionRequests (
     MedicalAttentionRequestID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each request
     Severity INT NOT NULL CHECK (Severity BETWEEN 1 AND 100)  -- Severity scale (1-100)
 );
 
 -- Medical Attention Donations Table
-CREATE TABLE MedicalAttentionDonations (
+CREATE TABLE IF NOT EXISTS MedicalAttentionDonations (
     MedicalAttentionDonationID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each donation
     Severity INT NOT NULL CHECK (Severity BETWEEN 1 AND 100)  -- Severity scale (1-100)
 );
 
 -- Financial Requests Table
-CREATE TABLE FinancialRequests (
+CREATE TABLE IF NOT EXISTS FinancialRequests (
     ID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each request
     Quantity DECIMAL(10,2) NOT NULL CHECK (Quantity > 0)  -- Amount of money requested
 );
 
 -- Financial Donations Table
-CREATE TABLE FinancialDonations (
+CREATE TABLE IF NOT EXISTS FinancialDonations (
     FinancialDonationID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each donation
     Quantity DECIMAL(10,2) NOT NULL CHECK (Quantity > 0)  -- Amount of money donated
 );
 
 -- Labor Requests Table
-CREATE TABLE LaborRequests (
+CREATE TABLE IF NOT EXISTS LaborRequests (
     LaborRequestID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each request
     Hours INT NOT NULL CHECK (hours > 0)  -- Number of labor hours requested
 );
 
 -- Labor Donations Table
-CREATE TABLE LaborDonations (
+CREATE TABLE IF NOT EXISTS LaborDonations (
     LaborDonationID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each donation
     Hours INT NOT NULL CHECK (hours > 0)  -- Number of labor hours donated
 );
 
 -- Shelter Requests Table
-CREATE TABLE ShelterRequests (
+CREATE TABLE IF NOT EXISTS ShelterRequests (
     ShelterRequestID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each request
     Days INT NOT NULL CHECK (days > 0)  -- Number of shelter days requested
 );
 
 -- Shelter Donations Table
-CREATE TABLE ShelterDonations (
+CREATE TABLE IF NOT EXISTS ShelterDonations (
     ShelterDonationID INT AUTO_INCREMENT PRIMARY KEY,  -- Unique identifier for each donation
     Days INT NOT NULL CHECK (days > 0)  -- Number of shelter days donated
 );
 -- Stored Procedures
 
 -- Patients Table Procedures
-DELIMITER //
-CREATE PROCEDURE CreateUser (IN name VARCHAR(100), IN dob DATE, IN addr Binary(16), IN zip Binary(16), IN email Binary(16), IN pwd Binary(16))
-BEGIN
-    INSERT INTO Users (Name, DateOfBirth, Address, ZipCode, Email, Password)
-    VALUES (name, dob, addr, zip, email, pwd);
-END //
+----------------------------------------------------------------------------------------------------------------------------------------
+-- THESE FUNCS ERE ADDED ALREADY 
+-- DELIMITER //
+-- CREATE PROCEDURE CreateUser (IN name VARCHAR(100), IN dob DATE, IN addr Binary(16), IN zip Binary(16), IN email Binary(16), IN pwd Binary(16))
+-- BEGIN
+--     INSERT INTO Users (Name, DateOfBirth, Address, ZipCode, Email, Password)
+--     VALUES (name, dob, addr, zip, email, pwd);
+-- END //
 
-CREATE PROCEDURE UpdateUser (IN uid INT, IN name VARCHAR(100), IN addr VARCHAR(255), IN zip VARCHAR(20), IN email VARCHAR(100), IN pwd Binary(16))
-BEGIN
-    UPDATE Users
-    SET Name = name, Address = addr, ZipCode = zip, Email = email
-    WHERE UserID = uid;
-END //
+-- CREATE PROCEDURE UpdateUser (IN uid INT, IN name VARCHAR(100), IN addr VARCHAR(255), IN zip VARCHAR(20), IN email VARCHAR(100), IN pwd Binary(16))
+-- BEGIN
+--     UPDATE Users
+--     SET Name = name, Address = addr, ZipCode = zip, Email = email
+--     WHERE UserID = uid;
+-- END //
 
-CREATE PROCEDURE DeletePatient (IN uid INT)
-BEGIN
-    DELETE FROM Users WHERE UserID = uid;
-END //
+-- CREATE PROCEDURE DeletePatient (IN uid INT)
+-- BEGIN
+--     DELETE FROM Users WHERE UserID = uid;
+-- END //
 
-CREATE PROCEDURE GetUsers ()
-BEGIN
-    SELECT * FROM Users;
-END //
+-- CREATE PROCEDURE GetUsers ()
+-- BEGIN
+--     SELECT * FROM Users;
+-- END //
 
-CREATE PROCEDURE GetUser (IN email Binary(16), IN pwd Binary (16))
-BEGIN 
-    SELECT * FROM Users
-    WHERE Email = email and Password = pwd;
-END //
+-- CREATE PROCEDURE GetUser (IN email Binary(16), IN pwd Binary (16))
+-- BEGIN 
+--     SELECT * FROM Users
+--     WHERE Email = email and Password = pwd;
+-- END //
+----------------------------------------------------------------------------------------------------------------------------------------
+
+
+
 
 -- CREATE PROCEDURE AddDonation ()
 
