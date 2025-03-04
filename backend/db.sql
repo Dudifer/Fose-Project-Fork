@@ -9,8 +9,8 @@
 -- );
 
 -- Create a new database
-CREATE DATABASE IF NOT EXISTS AidDatabase;
-USE AidDatabase;
+CREATE DATABASE IF NOT EXISTS DAMS;
+USE DAMS;
 
 -- Create a table for patients information
 CREATE TABLE IF NOT EXISTS AidCategories(
@@ -20,15 +20,16 @@ CREATE TABLE IF NOT EXISTS AidCategories(
 );
 
 INSERT INTO AidCategories(AidCategoryID, CategoryName)
-VALUES (0, 'food'),
+SELECT (0, 'food'),
     (1, 'clothing'),
     (2, 'medication'),
     (3, 'medical attention'),
     (4, 'shelter'),
     (5, 'financial'),
     (6, 'volunteer'),
-    (7, 'consumables') 
-;
+    (7, 'consumables') FROM DUAL 
+WHERE NOT EXISTS (SELECT * FROM AidCategories);
+
 -- Create a table for storing Insurance Information
 CREATE TABLE ClothingTypes (
     ClothingTypeID INT AUTO_INCREMENT PRIMARY KEY,       -- ID for each clothing type
@@ -36,28 +37,45 @@ CREATE TABLE ClothingTypes (
 );
 
 INSERT INTO ClolthingTypes(ClothingTypeID, TypeName)
-VALUES (0, 'shirt'),
+SELECT (0, 'shirt'),
     (1, 'jacket/coat'),
     (2, 'face/head covering'),
     (3, 'gloves'),
     (4, 'socks'),
     (5, 'underwear'),
-    (6, 'shoes')
-;    --(0, 'crown/hear covering') vs face/head covering
-    --(0, 'jacket') and (0, 'coat')
+    (6, 'shoes') FROM DUAL
+WHERE NOT EXISTS (SELECT * FROM ClothingTypes);
 
+-- (0, 'crown/hear covering') vs face/head covering
+-- (0, 'jacket') and (0, 'coat')
 
 CREATE TABLE Users (
     UserID INT AUTO_INCREMENT PRIMARY KEY,         -- Unique Patient ID
-    Name Binary(16),                             -- Patient's full name
+    Name VARCHAR(50),                             -- Patient's full name
     DateOfBirth DATE NOT NULL,                     -- Patient's date of birth. Binary?
-    Address Binary(16),                            -- Patient's address
-    ZipCode Binary(16),                            -- Patient's ZipCode, seperate for easy lookup.
-    Email Binary(16),                               -- Patient's email 
-    Password Binary(16), 
-    SecurityQuestion1 Binary(16),
-    SecurityAnswer1 Binary(16)
+    Address VARCHAR(255) NOT NULL,                            -- Patient's address
+    ZipCode INT NOT NULL,                            -- Patient's ZipCode, seperate for easy lookup.
+    Email VARCHAR(50) NOT NULL,                               -- Patient's email 
+    Password VARCHAR(50) NOT NULL, 
+    SecurityQuestion1 VARCHAR(255),
+    SecurityAnswer1 VARCHAR(255)
 );
+
+-- Make default/admin account 
+INSERT INTO Users(Name, DateOfBirth, Address, ZipCode, Email, Password)
+SELECT ("Jacob Nyberg", '2002-01-03', "316 Tantara Court, North Liberty IA", 52317, "sheeshthebot@gmail.com", "luvgothmommys") FROM DUAL
+WHERE NOT EXISTS (SELECT * FROM Users);
+
+-- Create a table for storing Payments
+CREATE TABLE Administrators (
+    AdminID INT AUTO_INCREMENT PRIMARY KEY,       
+    UserID INT NOT NULL,                       
+    FOREIGN KEY (UserID) REFERENCES Users(UserID)
+);
+
+INSERT INTO Administrators(UserID)
+SELECT (1) FROM DUAL
+WHERE NOT EXISTS (SELECT * FROM Administrators);
 
 -- Create a table for storing Copay/Deductible information
 CREATE TABLE ActiveDonors (
@@ -76,13 +94,6 @@ CREATE TABLE ActiveRecipients (
 -- Create a table for storing Payments
 CREATE TABLE CallCenterOperators (
     OperatorID INT AUTO_INCREMENT PRIMARY KEY,       
-    UserID INT NOT NULL,                       
-    FOREIGN KEY (UserID) REFERENCES Users(UserID)
-);
-
--- Create a table for storing Payments
-CREATE TABLE Administrators (
-    AdminID INT AUTO_INCREMENT PRIMARY KEY,       
     UserID INT NOT NULL,                       
     FOREIGN KEY (UserID) REFERENCES Users(UserID)
 );
